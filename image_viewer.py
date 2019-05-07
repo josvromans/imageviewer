@@ -3,12 +3,11 @@ import shutil
 import sys
 
 from PIL import Image, ImageTk
-from tkinter import Canvas, Tk, Label, LEFT, Frame
+from tkinter import Canvas, Tk, Label, LEFT, Frame, filedialog
+
+from settings import DEFAULT_ACTION_NAMES, DEFAULT_ALLOWED_EXTENSIONS, DEFAULT_BACKGROUND_COLOR, SOURCE_DIRECTORY
 
 
-DEFAULT_ALLOWED_EXTENSIONS = ['jpg', 'jpeg']
-DEFAULT_BACKGROUND_COLOR = 'black'
-DEFAULT_ACTION_NAMES = ['delete', 'good']
 TOP_BUTTON_HEIGHT = 50  # for the buttons
 MARGIN_BOTTOM = 70  # when there is no margin at the bottom, I can't be sure if the image really stops there
 MARGIN_LEFT_RIGHT = 10
@@ -49,7 +48,7 @@ def copy_to_clipboard(copy_text):
 
 class ImageViewer(Canvas):
 
-    def __init__(self, directory_path=None, allowed_extensions=None, action_names=None, *args, **kwargs):
+    def __init__(self, allowed_extensions=None, action_names=None, *args, **kwargs):
         """
 
         :param directory_path:
@@ -58,8 +57,12 @@ class ImageViewer(Canvas):
         """
         super().__init__(*args, **kwargs)
 
-        if directory_path is None:
-            directory_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'files')
+        if SOURCE_DIRECTORY is None:
+            # let the user choose a directory, default will be '/files'
+            default_directory_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'files')
+            directory_path = filedialog.askdirectory(initialdir=default_directory_path)
+        else:
+            directory_path = SOURCE_DIRECTORY
 
         if allowed_extensions is None:
             allowed_extensions = DEFAULT_ALLOWED_EXTENSIONS
@@ -174,7 +177,8 @@ class ImageViewer(Canvas):
         # copy image data to clipboard
         image_path = self.image_list[self.current_image_index]
         image_name = os.path.split(image_path)[-1]
-        image_data = image_name.split('.')[0]
+        # file names can hold a point... so split on point to get the extension, but join the first part if needed
+        image_data = '.'.join(image_name.split('.')[:-1])
         copy_to_clipboard(image_data)
 
     def _move_image_action(self, event):
