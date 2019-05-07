@@ -1,16 +1,3 @@
-"""
-Controls;
-
-<left> and <right> keys to navigate trough image list.
-[1 - 9] keys will move the current image to the corresponding folder, where 1 = delete, 2 = good, etc
-(No real deletion will be done. Only move the file to a folder called 'delete')
-
-<backspace> will undo the last action: put the image back in the main folder
-
-<ctrl-c> will copy the current image name without the extension to the clipboard
-
-<escape> to exit the application
-"""
 import os
 import shutil
 import sys
@@ -21,8 +8,7 @@ from tkinter import Canvas, Tk, Label, LEFT, Frame
 
 DEFAULT_ALLOWED_EXTENSIONS = ['jpg', 'jpeg']
 DEFAULT_BACKGROUND_COLOR = 'black'
-DEFAULT_ACTION_NAMES = ['delete', 'good']  #, 'average']
-# DEFAULT_ACTION_NAMES = ['blackwhite', 'randomcolors', 'eclipse', 'singleobject', 'space']
+DEFAULT_ACTION_NAMES = ['delete', 'good']
 TOP_BUTTON_HEIGHT = 50  # for the buttons
 MARGIN_BOTTOM = 70  # when there is no margin at the bottom, I can't be sure if the image really stops there
 MARGIN_LEFT_RIGHT = 10
