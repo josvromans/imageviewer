@@ -47,11 +47,13 @@ By default, the imageviewer expects a folder called `files` in the root director
 Make it, and place your images there.
 
 .. code-block:: bash
+
     $ mkdir files
 
 In case python Tkinter is not installed on your system, install it:
 
 .. code-block:: bash
+
     $ apt-get install python-tk
 
 
