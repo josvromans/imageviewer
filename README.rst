@@ -56,28 +56,42 @@ In case python Tkinter is not installed on your system, install it:
 
     $ apt-get install python-tk
 
+Make sure you have a files directory with actual images in it with the allowed extension (jpg by default).
+Then launch the program:
+
+.. code-block:: bash
+
+    $ python image_viewer.py
+
 
 =============
 Configuration
 =============
 For this initial try, you can only change settings in the code.
 
-Only extensions from a specified `whitelist` will be shown.
-Change the following line in `image_viewer.py` if you want to see other extensions than jpg:
-`DEFAULT_ALLOWED_EXTENSIONS = ['jpg', 'jpeg']`
+Only extensions from a specified whitelist will be shown.
+Change the following line in "image_viewer.py" if you want to see other extensions than jpg:
+```python
+DEFAULT_ALLOWED_EXTENSIONS = ['jpg', 'jpeg']
+```
 
 The subdirectories are specified in
-`DEFAULT_ACTION_NAMES = ['delete', 'good']`
+```python
+DEFAULT_ACTION_NAMES = ['delete', 'good']
+```
 They will be bound to the keys [1 - 9] (don't add more then 9 items in this list).
 So if you set this to
-DEFAULT_ACTION_NAMES = ['1', '2', '3']`
+```python
+DEFAULT_ACTION_NAMES = ['1', '2', '3']
+```
 and launch the program again. It will make sure there are 3 subdirectories with those names.
 And pressing 1 will put the current image in subdirectory called '/1'
 
-The directory will be `/files/` in the root of this project. When you want to point to any other
-directory you have to change the `directory_path`. For example, you could do something like this:
-`ImageViewer(master=root)` to
-`ImageViewer(master=root, directory_path='/home/your_user_name/images/order_this/')`
+The directory will be "/files/" in the root of this project. When you want to point to any other
+directory you have to change the "directory_path". For example, you could do something like this:
+```python
+ImageViewer(master=root, directory_path='/home/your_user_name/images/order_this/')
+```
 
 
 ====
