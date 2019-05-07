@@ -70,23 +70,23 @@ Configuration and settings
 Only images with a specific extension are considered. Jpeg is the default, if you want other extensions, you can
 specify it in settings.py:
 
-``
+```
 DEFAULT_ALLOWED_EXTENSIONS = ['jpg', 'jpeg']
-``
+```
 
 Only image files in one directory will be considered. You can select a directory in a dialog when you launch the program.
 You can also skip this step by specifying the `SOURCE_DIRECTORY` in the settings. Change it from `None` to an existing path:
 
-``
+```
 SOURCE_DIRECTORY = '/home/user/Pictures/categorize_this/'
-``
+```
 
 The `DEFAULT_ACTION_NAMES` will be bound to the keys [1-9]. By default 1 = delete and 2 = good, but you can use
 any label you want by changing in `settings.py`
 
-``
+```
 DEFAULT_ACTION_NAMES = ['delete', 'good']
-``
+```
 
 Note that a subdirectory will be made for each label, with exactly the name of the label. When you have several names
 with the same label, there will be several keys that will perform the same action: move an image to the same folder.
