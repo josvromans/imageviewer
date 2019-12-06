@@ -54,7 +54,7 @@ In case python Tkinter is not installed on your system, install it:
 
 .. code-block:: bash
 
-    $ apt-get install python-tk
+    $ apt-get install python3-tk
 
 Make sure you have a files directory with actual images in it with the allowed extension (jpg by default).
 Then launch the program:

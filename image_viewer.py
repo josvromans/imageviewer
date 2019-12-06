@@ -3,7 +3,7 @@ import shutil
 import sys
 
 from PIL import Image, ImageTk
-from tkinter import Canvas, Tk, Label, LEFT, Frame, filedialog
+from tkinter import Canvas, Tk, Label, LEFT, Frame, filedialog, messagebox
 
 from settings import DEFAULT_ACTION_NAMES, DEFAULT_ALLOWED_EXTENSIONS, DEFAULT_BACKGROUND_COLOR, SOURCE_DIRECTORY
 
@@ -109,8 +109,18 @@ class ImageViewer(Canvas):
 
     def _quit(self, event=None):
         """
-        The tkinter.Canvas has a quit() method, so why not call that first
+        Before quiting, determine if there is a 'delete' folder.
+        Only if exactly one has been determined, ask the user if it should be deleted.
+
+        Since tkinter.Canvas has a quit() method, call that first, before sys.exit()
         """
+        delete_dirs = [d for d in self.action_destination_dirs if d.lower().endswith('delete')]
+        if len(delete_dirs) == 1:
+            if messagebox.askyesno("Question", "Delete the 'delete' directory?"):
+                try:
+                    shutil.rmtree(delete_dirs[0])
+                except Exception as e:
+                    messagebox.showwarning("Warning", "Something went wrong: {}".format(e))
         self.quit()
         sys.exit()
 
