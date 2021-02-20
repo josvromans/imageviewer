@@ -347,6 +347,5 @@ def main():
     root.mainloop()
 
 
-# Main Function Trigger
 if __name__ == '__main__':
     main()
