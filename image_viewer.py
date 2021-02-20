@@ -81,9 +81,11 @@ class ImageViewer(Canvas):
         assert len(self.image_list) > 0, 'The folder {} contains no images of the format(s) "{}"'.format(
             self.directory_path, ', '.join(allowed_extensions))
 
-        # only sets the initial screensize on startup
-        self['width'] = self.winfo_screenwidth()
-        self['height'] = self.winfo_screenheight()
+        self.window_width = self.winfo_screenwidth()
+        self.window_height = self.winfo_screenheight()
+        # this sets the initial startup scrensize:
+        self['width'] = self.window_width
+        self['height'] = self.window_height
         self['bg'] = DEFAULT_BACKGROUND_COLOR
 
         self.top_frame = Frame(self.master, height=TOP_BUTTON_HEIGHT)
@@ -96,7 +98,7 @@ class ImageViewer(Canvas):
         self.master.bind('<Right>', self.next_image)
         self.master.bind('<BackSpace>', self.undo_last_action)
         self.master.bind('<Control-c>', self.copy_image_name_to_clipboard)
-        # self.master.bind("<Configure>", self.on_resize)  # TODO: find a way to make resize window work nicely
+        self.master.bind("<Configure>", self.on_resize)
 
         self.total_images = len(self.image_list)
         self.current_image_index = 0
@@ -124,6 +126,17 @@ class ImageViewer(Canvas):
         self.quit()
         sys.exit()
 
+    def on_resize(self, event):
+        if event.width == self.window_width and event.height == self.window_height:
+            return
+
+        self.window_width = event.width
+        self.window_height = event.height
+
+        # No need to do calculations when it is called with a very small screen size
+        if self.window_width > 200 and self.window_height > 200:
+            self.show_image()
+
     def initialize_actions(self):
         """
         For every actions, there should be a corresponding directory.
@@ -147,8 +160,8 @@ class ImageViewer(Canvas):
 
         original_width = pil_image.width
         original_height = pil_image.height
-        max_height_image = self.winfo_screenheight() - TOP_BUTTON_HEIGHT - MARGIN_BOTTOM
-        max_width_image = self.winfo_screenwidth() - 2 * MARGIN_LEFT_RIGHT
+        max_height_image = self.window_height - TOP_BUTTON_HEIGHT - MARGIN_BOTTOM
+        max_width_image = self.window_width - 2 * MARGIN_LEFT_RIGHT
 
         scale_factor_height, scale_factor_width = 1, 1
         if original_height > max_height_image:
@@ -161,6 +174,11 @@ class ImageViewer(Canvas):
         if scale_factor != 1:
             new_width = int(original_width * scale_factor)
             new_height = int(original_height * scale_factor)
+
+            if new_width < 50 or new_height < 50:
+                # when there is not enought space to display an image properly, do nothing
+                return
+
             pil_image = pil_image.resize((new_width, new_height))
         else:
             new_width = original_width
