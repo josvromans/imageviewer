@@ -1,16 +1,81 @@
+#!/usr/bin/env python3
 import os
 import shutil
 import sys
+sys.path.insert(0, '/home/jos/Projects/image_viewer/env/lib/python3.8/site-packages')  # to make PIL work
 
 from PIL import Image, ImageTk
-from tkinter import Canvas, Tk, Label, LEFT, Frame, filedialog, messagebox
+from tkinter import Canvas, Tk, Label, LEFT, Frame, messagebox
 
-from settings import DEFAULT_ACTION_NAMES, DEFAULT_ALLOWED_EXTENSIONS, DEFAULT_BACKGROUND_COLOR, SOURCE_DIRECTORY
+import gi
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk
 
 
+ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png']
 TOP_BUTTON_HEIGHT = 50  # for the buttons
 MARGIN_BOTTOM = 70  # when there is no margin at the bottom, I can't be sure if the image really stops there
 MARGIN_LEFT_RIGHT = 10
+
+input_parameters = {
+    'category_1': 'delete',
+    'category_2': 'good',
+    'category_3': '',
+    'category_4': '',
+    'category_5': '',
+    'category_6': '',
+    'category_7': '',
+    'category_8': '',
+    'category_9': '',
+}
+
+
+class EntryWindow(Gtk.Window):
+    def __init__(self):
+        Gtk.Window.__init__(self, title='Image Viewer Setup')
+
+        grid = Gtk.Grid(column_homogeneous=True, column_spacing=10, row_spacing=10)
+        self.add(grid)
+
+        row_index = 0
+        for name, value in input_parameters.items():
+            entry = Gtk.Entry(text=value)
+            setattr(self, name, entry)
+
+            label = Gtk.Label(label=name, halign=Gtk.Align.END)
+            grid.attach(label, left=0, top=row_index, width=2, height=1)
+            grid.attach_next_to(getattr(self, name), sibling=label, side=Gtk.PositionType.RIGHT, width=2, height=1)
+
+            row_index += 1
+
+        self.cancel_button = Gtk.Button.new_with_mnemonic('cancel')
+        self.cancel_button.connect("clicked", self._quit)
+        self.submit_button = Gtk.Button.new_with_mnemonic('OK')
+        self.submit_button.connect("clicked", self.on_submit)
+
+        grid.attach(self.cancel_button, 0, row_index, 2, 1)
+        grid.attach(self.submit_button, 2, row_index, 2, 1)
+
+    def _quit(self, *args, **kwargs):
+        Gtk.main_quit()
+
+    def on_submit(self, button):
+        for name in input_parameters.keys():
+            input_parameters[name] = getattr(self, name).get_text()
+
+        sorted_keys = sorted([k for k in input_parameters.keys()])
+        action_names = [input_parameters[k] for k in sorted_keys if input_parameters[k]]
+
+        # should be called with one directory
+        nautilus_file_paths = os.environ['NAUTILUS_SCRIPT_SELECTED_FILE_PATHS'].splitlines()
+        if not (len(nautilus_file_paths) == 1 and os.path.isdir(nautilus_file_paths[0])):
+            self._quit()
+
+        # sorry, for now the fastest way to make this work..
+        os.environ['DIRECTORY_PATH'] = nautilus_file_paths[0]
+        os.environ['ACTION_NAMES'] = '_+_'.join(action_names)
+
+        self._quit()
 
 
 def get_image_list(image_dir, allowed_extensions):
@@ -48,45 +113,25 @@ def copy_to_clipboard(copy_text):
 
 class ImageViewer(Canvas):
 
-    def __init__(self, allowed_extensions=None, action_names=None, *args, **kwargs):
-        """
-
-        :param directory_path:
-        :param allowed_extensions:
-        :param action_names:
-        """
+    def __init__(self, directory_path, action_names, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        if SOURCE_DIRECTORY is None:
-            # let the user choose a directory, default will be '/files'
-            default_directory_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'files')
-            directory_path = filedialog.askdirectory(initialdir=default_directory_path)
-        else:
-            directory_path = SOURCE_DIRECTORY
-
-        if allowed_extensions is None:
-            allowed_extensions = DEFAULT_ALLOWED_EXTENSIONS
-
-        if action_names is None:
-            action_names = DEFAULT_ACTION_NAMES
-
         self.directory_path = directory_path
-        self.allowed_extensions = allowed_extensions
         self.action_names = action_names
         self.action_counts = [0] * len(self.action_names)
         self.action_destination_dirs = []  # will be set in self.initialize_actions
 
-        self.image_list = get_image_list(image_dir=self.directory_path, allowed_extensions=allowed_extensions)
+        self.image_list = get_image_list(image_dir=self.directory_path, allowed_extensions=ALLOWED_EXTENSIONS)
 
         assert len(self.image_list) > 0, 'The folder {} contains no images of the format(s) "{}"'.format(
-            self.directory_path, ', '.join(allowed_extensions))
+            self.directory_path, ', '.join(ALLOWED_EXTENSIONS))
 
         self.window_width = self.winfo_screenwidth()
         self.window_height = self.winfo_screenheight()
         # this sets the initial startup scrensize:
         self['width'] = self.window_width
         self['height'] = self.window_height
-        self['bg'] = DEFAULT_BACKGROUND_COLOR
+        self['bg'] = 'black'
 
         self.top_frame = Frame(self.master, height=TOP_BUTTON_HEIGHT)
         self.top_frame.pack()
@@ -184,8 +229,6 @@ class ImageViewer(Canvas):
             new_width = original_width
             new_height = original_height
 
-        # self.delete(self.find_withtag("bacl"))  # TODO, figure out if need this?
-
         new_x = int((max_width_image - new_width) / 2)
         new_y = int((TOP_BUTTON_HEIGHT + max_height_image - new_height) / 2)
 
@@ -282,17 +325,28 @@ class ImageViewer(Canvas):
 
 
 def main():
-    root = Tk(className="Image Viewer")
-    ImageViewer(master=root).pack(expand="yes", fill="both")
+    #
+    # Input window
+    #
+    win = EntryWindow()
+    win.connect("destroy", Gtk.main_quit)
+    win.show_all()
+    Gtk.main()
+    Gtk.main_quit()
 
-    # root.resizable(width=0, height=0)  # Not Resizable
-    # root.resizable()
+    #
+    # Main application
+    #
+    root = Tk(className="Image Viewer")
+    ImageViewer(
+        master=root,
+        directory_path=os.environ['DIRECTORY_PATH'],
+        action_names=os.environ['ACTION_NAMES'].split('_+_'),
+    ).pack(expand="yes", fill="both")
+
     root.mainloop()
 
 
 # Main Function Trigger
 if __name__ == '__main__':
     main()
-
-
-# TODO: use relx rely for relative coordinates, so on window resize, the button position will change
