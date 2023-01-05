@@ -1,4 +1,3 @@
-==================================================
 Image Viewer - organize images as fast as possible
 ==================================================
 
@@ -14,8 +13,6 @@ I also want to copy the filename in some cases, since I encode parameters in the
 These kind of actions can easily be adjusted in the code. For example, at some point I will write a few lines to parse the parameters from the filename to trigger an action.
 So when I browse through my images, I can launch an action based on the current filename parameters on every image that I approve.
 
-
-========
 Controls
 ========
 <left> and <right> keys to navigate trough image list
@@ -31,7 +28,6 @@ By default 1 = delete, 2 = good.
 <escape> to exit the application
 
 
-============
 Installation
 ============
 
@@ -64,7 +60,6 @@ Then launch the program:
     $ python image_viewer.py
 
 
-==========================
 Configuration and settings
 ==========================
 Only images with a specific extension are considered. Jpeg is the default, if you want other extensions, you can
@@ -94,7 +89,6 @@ For now, the action will be bound to the keys 1-9 so you can not add more then 9
 you need to change some code in image_viewer.py
 
 
-=======================================================
 Add ImageViewer to Nautilus File menu (on Linux Ubuntu)
 =======================================================
 See the comment on top of the file 'nautilus launcher'.
@@ -104,7 +98,6 @@ You can right click on any folder, to start the image viewer to organize that sp
 ![Pop up](imageviewer_nautilus_pop_up.png)
 
 
-====
 TODO
 ====
 Since this is a first try, there are many things to improve, for example:
