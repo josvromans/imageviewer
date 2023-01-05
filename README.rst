@@ -93,6 +93,17 @@ with the same label, there will be several keys that will perform the same actio
 For now, the action will be bound to the keys 1-9 so you can not add more then 9 actions. If you want more freedom
 you need to change some code in image_viewer.py
 
+
+=======================================================
+Add ImageViewer to Nautilus File menu (on Linux Ubuntu)
+=======================================================
+See the comment on top of the file 'nautilus launcher'.
+You can right click on any folder, to start the image viewer to organize that specific folder. In the prompt manu, you can fill in up to 9 categories. Default is just two, for GOOD and DELETE.
+
+![Menu after right-click](imageviewer_nautilus_menu.png)
+![Pop up](imageviewer_nautilus_pop_up.png)
+
+
 ====
 TODO
 ====
