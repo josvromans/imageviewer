@@ -31,8 +31,6 @@ By default 1 = delete, 2 = good.
 Installation
 ============
 
-.. code-block:: bash
-
     $ git clone https://github.com/josvromans/imageviewer.git
     $ cd imageviewer/
     $ virtualenv --python=/usr/bin/python3 env
@@ -42,20 +40,14 @@ Installation
 By default, the imageviewer expects a folder called `files` in the root directory.
 Make it, and place your images there.
 
-.. code-block:: bash
-
     $ mkdir files
 
 In case python Tkinter is not installed on your system, install it:
-
-.. code-block:: bash
 
     $ apt-get install python3-tk
 
 Make sure you have a files directory with actual images in it with the allowed extension (jpg by default).
 Then launch the program:
-
-.. code-block:: bash
 
     $ python image_viewer.py
 
